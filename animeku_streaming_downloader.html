@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimeKu - Nonton & Download Anime 1080p</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f5ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            accent: '#a855f7',
+                            neon: '#06b6d4',
+                            dark: '#0b0f19',
+                            card: '#151c2c',
+                            cardBorder: '#232d42'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glassmorphism {
+            background: rgba(21, 28, 44, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #06b6d4 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glow-purple {
+            box-shadow: 0 0 25px -5px rgba(168, 85, 247, 0.4);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(11, 15, 25, 0.8);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(168, 85, 247, 0.4);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(168, 85, 247, 0.8);
+        }
+    </style>
+</head>
+<body class="bg-brand-dark text-slate-100 min-h-screen flex flex-col custom-scrollbar antialiased">
+
+    <header class="sticky top-0 z-40 w-full glassmorphism border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 gap-4">
+                
+                <!-- Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('home')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                        <i class="fa-solid fa-play text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-black tracking-wider text-gradient">AnimeKu</span>
+                        <span class="hidden sm:inline-block text-[10px] font-bold uppercase tracking-widest text-cyan-400 block -mt-1">1080p Ultra HD</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Links (Desktop) -->
+                <nav class="hidden md:flex items-center gap-1 lg:gap-2">
+                    <button onclick="switchTab('home')" id="nav-home" class="nav-link px-3.5 py-2 rounded-xl text-sm font-semibold transition text-purple-400 bg-purple-500/10 border border-purple-500/20">
+                        <i class="fa-solid fa-house mr-1.5"></i> Beranda
+                    </button>
+                    <button onclick="switchTab('popular')" id="nav-popular" class="nav-link px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+                        <i class="fa-solid fa-fire text-amber-500 mr-1.5"></i> Populer
+                    </button>
+                    <button onclick="switchTab('ongoing')" id="nav-ongoing" class="nav-link px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+                        <i class="fa-solid fa-bolt text-cyan-400 mr-1.5"></i> Ongoing
+                    </button>
+                    <button onclick="switchTab('bookmark')" id="nav-bookmark" class="nav-link px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+                        <i class="fa-solid fa-bookmark text-pink-500 mr-1.5"></i> Bookmark
+                    </button>
+                </nav>
+
+                <!-- Actions & Guide Trigger -->
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Cari anime..." 
+                               oninput="handleSearch(this.value)"
+                               class="w-32 sm:w-48 lg:w-60 bg-slate-900/90 text-xs sm:text-sm text-slate-100 placeholder-slate-400 rounded-full pl-9 pr-4 py-2 border border-slate-700/70 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+                        
+                        <div id="searchDropdown" class="hidden absolute right-0 sm:left-0 top-12 w-64 sm:w-72 bg-slate-900/95 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden z-50 max-h-80 overflow-y-auto custom-scrollbar">
+                        </div>
+                    </div>
+
+                    <!-- Button Deploy Guide -->
+                    <button onclick="openGuideModal()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-purple-600/30 transition flex items-center gap-2">
+                        <i class="fa-brands fa-github text-sm"></i>
+                        <span class="hidden sm:inline">Cara Host Github & Vercel</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+        
+        <!-- Hero Featured Banner -->
+        <section id="heroSection" class="relative rounded-3xl overflow-hidden bg-brand-card border border-brand-cardBorder shadow-2xl">
+            <div id="heroContent" class="relative min-h-[360px] sm:min-h-[420px] flex items-end p-6 sm:p-10 bg-cover bg-center transition-all duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent"></div>
+                <div class="relative z-10 max-w-2xl space-y-3">
+                    <div class="flex items-center gap-2">
+                        <span id="heroBadge" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg">Featured 1080p</span>
+                        <span id="heroRating" class="text-amber-400 text-xs font-bold flex items-center gap-1 bg-slate-900/80 px-2.5 py-1 rounded-full border border-slate-800"><i class="fa-solid fa-star"></i> 9.8</span>
+                    </div>
+                    <h1 id="heroTitle" class="text-2xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">Solo Leveling: Arise</h1>
+                    <p id="heroDesc" class="text-slate-300 text-xs sm:text-sm line-clamp-3 leading-relaxed">
+                        Di dunia di mana pemburu harus melawan monster mematikan, Sung Jinwoo yang lemah mendapatkan kekuatan misterius untuk naik level tanpa batas.
+                    </p>
+                    <div id="heroGenres" class="flex flex-wrap gap-2 pt-1"></div>
+                    <div class="flex items-center gap-3 pt-3">
+                        <button id="heroWatchBtn" onclick="openPlayer('solo-leveling')" class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-600 text-white font-bold text-xs sm:text-sm shadow-xl hover:scale-105 active:scale-95 transition flex items-center gap-2">
+                            <i class="fa-solid fa-play"></i> Nonton & Download
+                        </button>
+                        <button id="heroBookmarkBtn" onclick="toggleBookmark('solo-leveling')" class="p-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-white border border-slate-700/80 transition">
+                            <i class="fa-regular fa-bookmark"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="space-y-5">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800/80 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
+                        <i class="fa-solid fa-layer-group text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 id="sectionTitle" class="text-lg sm:text-xl font-extrabold text-white">Rekomendasi Terpopuler</h2>
+                        <p class="text-xs text-slate-400">Pilih anime favoritmu dan tonton dalam resolusi Full HD</p>
+                    </div>
+                </div>
+                
+                <!-- Category Filter Badges -->
+                <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 custom-scrollbar">
+                    <button onclick="filterByGenre('All')" class="genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-purple-600 text-white whitespace-nowrap transition">Semua</button>
+                    <button onclick="filterByGenre('Action')" class="genre-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800 whitespace-nowrap transition">Action</button>
+                    <button onclick="filterByGenre('Fantasy')" class="genre-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800 whitespace-nowrap transition">Fantasy</button>
+                    <button onclick="filterByGenre('Isekai')" class="genre-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800 whitespace-nowrap transition">Isekai</button>
+                    <button onclick="filterByGenre('Sci-Fi')" class="genre-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800 whitespace-nowrap transition">Sci-Fi</button>
+                    <button onclick="filterByGenre('Romance')" class="genre-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800 whitespace-nowrap transition">Romance</button>
+                </div>
+            </div>
+
+            <!-- Anime Cards Grid -->
+            <div id="animeGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
+            </div>
+        </section>
+
+    </main>
+
+    <div id="playerModal" class="fixed inset-0 z-50 hidden bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto custom-scrollbar">
+        <div class="bg-brand-card border border-brand-cardBorder rounded-3xl w-full max-w-5xl overflow-hidden shadow-2xl my-auto relative">
+            
+            <!-- Modal Close Button -->
+            <button onclick="closePlayer()" class="absolute top-4 right-4 z-30 p-2.5 rounded-full bg-slate-950/80 hover:bg-slate-800 text-slate-300 hover:text-white transition border border-slate-700/60">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Video Player Screen Container -->
+            <div class="relative bg-black aspect-video w-full flex items-center justify-center group overflow-hidden border-b border-slate-800">
+                <img id="playerThumbnail" src="" class="absolute inset-0 w-full h-full object-cover opacity-30 blur-sm">
+                
+                <!-- Simulated Dynamic Video Element -->
+                <div id="videoCanvas" class="relative z-10 text-center space-y-4 p-4 w-full max-w-xl">
+                    <div id="playerStatusBadge" class="inline-block px-3 py-1 rounded-full bg-purple-600/90 text-white text-[11px] font-bold tracking-wider mb-2 border border-purple-400/30">
+                        <i class="fa-solid fa-circle text-[8px] text-emerald-400 mr-1.5 animate-pulse"></i> Ready • Server Alpha 1080p Full HD
+                    </div>
+                    <h3 id="playerEpisodeTitle" class="text-lg sm:text-2xl font-black text-white drop-shadow-md"></h3>
+                    
+                    <div class="flex items-center justify-center gap-4 pt-2">
+                        <button onclick="changeEpisode(-1)" class="p-3.5 rounded-2xl bg-slate-900/80 hover:bg-purple-600 text-white transition border border-slate-700/80"><i class="fa-solid fa-backward-step"></i></button>
+                        <button id="playPauseBtn" onclick="togglePlayState()" class="p-5 sm:p-6 rounded-full bg-gradient-to-tr from-cyan-500 via-purple-600 to-pink-600 text-white text-2xl shadow-xl hover:scale-110 transition">
+                            <i class="fa-solid fa-play ml-1"></i>
+                        </button>
+                        <button onclick="changeEpisode(1)" class="p-3.5 rounded-2xl bg-slate-900/80 hover:bg-purple-600 text-white transition border border-slate-700/80"><i class="fa-solid fa-forward-step"></i></button>
+                    </div>
+
+                    <!-- Stream Progress Bar -->
+                    <div class="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden mt-4">
+                        <div id="streamProgressBar" class="bg-gradient-to-r from-cyan-400 to-purple-500 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+
+                <!-- Custom Player Control Bar -->
+                <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent flex flex-wrap items-center justify-between gap-2 z-20 text-xs">
+                    <div class="flex items-center gap-3">
+                        <span class="text-cyan-400 font-bold flex items-center gap-1.5 bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-800">
+                            <i class="fa-solid fa-server text-[10px]"></i> Server Streaming:
+                        </span>
+                        <select id="serverSelect" onchange="switchServer(this.value)" class="bg-slate-900 text-slate-200 rounded-lg px-2.5 py-1 border border-slate-700 focus:outline-none focus:border-purple-500 text-xs">
+                            <option value="Server Alpha (VIP 1080p)">Server Alpha (VIP 1080p)</option>
+                            <option value="Server Beta (Fast CDN)">Server Beta (Fast CDN)</option>
+                            <option value="Server Gamma (Ultra High)">Server Gamma (Ultra High)</option>
+                            <option value="Direct Node Stream">Direct Node Stream</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-400">Resolusi Stream:</span>
+                        <select id="streamQuality" class="bg-slate-900 text-cyan-400 font-bold rounded-lg px-2.5 py-1 border border-slate-700 focus:outline-none text-xs">
+                            <option value="1080p">1080p Full HD</option>
+                            <option value="720p">720p HD</option>
+                            <option value="480p">480p SD</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Body Details -->
+            <div class="p-5 sm:p-7 space-y-6 max-h-[50vh] overflow-y-auto custom-scrollbar">
+                
+                <!-- Anime Info Header -->
+                <div class="flex flex-col md:flex-row gap-6 items-start">
+                    <div class="flex-1 space-y-2">
+                        <h2 id="modalAnimeTitle" class="text-2xl font-black text-white"></h2>
+                        <div class="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+                            <span id="modalRating" class="text-amber-400 font-bold flex items-center gap-1"><i class="fa-solid fa-star"></i> 0.0</span>
+                            <span>•</span>
+                            <span id="modalStatus">Ongoing</span>
+                            <span>•</span>
+                            <span id="modalTotalEps">24 Episode</span>
+                        </div>
+                        <p id="modalSynopsis" class="text-xs sm:text-sm text-slate-300 leading-relaxed pt-2"></p>
+                    </div>
+                    <div class="w-full md:w-auto">
+                        <button id="modalBookmarkBtn" onclick="toggleCurrentBookmark()" class="w-full md:w-auto px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold border border-slate-700 flex items-center justify-center gap-2 transition">
+                            <i class="fa-regular fa-bookmark"></i> Bookmark
+                        </button>
+                    </div>
+                </div>
+
+                <!-- DOWNLOAD SECTION 1080p/720p/480p -->
+                <div class="space-y-3 bg-slate-900/90 border border-slate-800 p-4 sm:p-5 rounded-2xl">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-sm font-extrabold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-download text-cyan-400"></i> Download Episode Terpilih (Sub Indonesia)
+                        </h4>
+                        <span id="downloadEpLabel" class="text-xs text-purple-400 font-bold"></span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                        <!-- 1080p Ultra HD Card -->
+                        <div class="bg-slate-950 border border-purple-500/30 hover:border-purple-500 p-3.5 rounded-xl space-y-2 transition">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-black text-purple-400">1080p Full HD</span>
+                                <span class="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-md font-bold">mkv • ~350MB</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-1.5 pt-1">
+                                <button onclick="triggerDownload('1080p', 'Google Drive')" class="bg-slate-800 hover:bg-purple-600 text-white text-[11px] font-semibold py-1.5 rounded-lg transition text-center">G-Drive</button>
+                                <button onclick="triggerDownload('1080p', 'Mega')" class="bg-slate-800 hover:bg-purple-600 text-white text-[11px] font-semibold py-1.5 rounded-lg transition text-center">Mega</button>
+                                <button onclick="triggerDownload('1080p', 'Kraken')" class="bg-slate-800 hover:bg-purple-600 text-white text-[11px] font-semibold py-1.5 rounded-lg transition text-center">Kraken</button>
+                                <button onclick="triggerDownload('1080p', 'Direct')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-[11px] font-bold py-1.5 rounded-lg transition text-center col-span-1">Direct</button>
+                            </div>
+                        </div>
+
+                        <!-- 720p HD Card -->
+                        <div class="bg-slate-950 border border-slate-800 hover:border-slate-700 p-3.5 rounded-xl space-y-2 transition">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-black text-cyan-400">720p HD</span>
+                                <span class="text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-md font-bold">mp4 • ~180MB</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-1.5 pt-1">
+                                <button onclick="triggerDownload('720p', 'Google Drive')" class="bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-semibold py-1.5 rounded-lg transition text-center">G-Drive</button>
+                                <button onclick="triggerDownload('720p', 'Mega')" class="bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-semibold py-1.5 rounded-lg transition text-center">Mega</button>
+                                <button onclick="triggerDownload('720p', 'Kraken')" class="bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-semibold py-1.5 rounded-lg transition text-center">Kraken</button>
+                                <button onclick="triggerDownload('720p', 'Direct')" class="bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-bold py-1.5 rounded-lg transition text-center">Direct</button>
+                            </div>
+                        </div>
+
+                        <!-- 480p SD Card -->
+                        <div class="bg-slate-950 border border-slate-800 hover:border-slate-700 p-3.5 rounded-xl space-y-2 transition">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-black text-slate-300">480p Hemat Data</span>
+                                <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-md font-bold">mp4 • ~90MB</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-1.5 pt-1">
+                                <button onclick="triggerDownload('480p', 'Google Drive')" class="bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-semibold py-1.5 rounded-lg transition text-center">G-Drive</button>
+                                <button onclick="triggerDownload('480p', 'Mega')" class="bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-semibold py-1.5 rounded-lg transition text-center">Mega</button>
+                                <button onclick="triggerDownload('480p', 'Kraken')" class="bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-semibold py-1.5 rounded-lg transition text-center">Kraken</button>
+                                <button onclick="triggerDownload('480p', 'Direct')" class="bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-bold py-1.5 rounded-lg transition text-center">Direct</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Episode Selector Grid -->
+                <div class="space-y-3">
+                    <h4 class="text-sm font-bold text-white flex items-center justify-between">
+                        <span>Daftar Episode</span>
+                        <span id="episodeCountBadge" class="text-xs text-purple-400 font-normal"></span>
+                    </h4>
+                    <div id="episodeGrid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="guideModal" class="fixed inset-0 z-50 hidden bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto custom-scrollbar">
+        <div class="bg-brand-card border border-brand-cardBorder rounded-3xl w-full max-w-3xl overflow-hidden shadow-2xl my-auto relative">
+            
+            <button onclick="closeGuideModal()" class="absolute top-4 right-4 z-30 p-2.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="p-6 sm:p-8 space-y-6 max-h-[85vh] overflow-y-auto custom-scrollbar">
+                
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-4">
+                    <div class="p-3 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white text-xl">
+                        <i class="fa-brands fa-github"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black text-white">Cara Upload Kode ke GitHub & Deploy Vercel</h3>
+                        <p class="text-xs text-slate-400">Panduan praktis agar website AnimeKu milikmu dapat diakses secara online gratis.</p>
+                    </div>
+                </div>
+
+                <!-- Step 1: Prepare Code -->
+                <div class="space-y-2">
+                    <h4 class="text-sm font-bold text-cyan-400 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-cyan-500/20 flex items-center justify-center text-xs">1</span>
+                        Simpan Kode Website
+                    </h4>
+                    <p class="text-xs text-slate-300 leading-relaxed pl-8">
+                        Simpan seluruh kode HTML di atas ke dalam satu berkas dengan nama <code class="bg-slate-900 text-purple-300 px-2 py-0.5 rounded">index.html</code> di komputer/laptop milikmu.
+                    </p>
+                </div>
+
+                <!-- Step 2: Push to GitHub -->
+                <div class="space-y-2">
+                    <h4 class="text-sm font-bold text-cyan-400 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-cyan-500/20 flex items-center justify-center text-xs">2</span>
+                        Unggah (Upload) ke GitHub
+                    </h4>
+                    <div class="text-xs text-slate-300 leading-relaxed pl-8 space-y-1.5">
+                        <p>1. Buka <a href="https://github.com" target="_blank" class="text-purple-400 underline">GitHub.com</a> dan buat akun gratis.</p>
+                        <p>2. Klik tombol **"New Repository"** (atau tanda <code class="bg-slate-900 text-purple-300 px-1.5 py-0.5 rounded">+</code> di kanan atas).</p>
+                        <p>3. Beri nama repository, misalnya: <code class="bg-slate-900 text-purple-300 px-2 py-0.5 rounded">animeku-web</code>, pilih Public, lalu klik **Create repository**.</p>
+                        <p>4. Klik opsi **"uploading an existing file"**, lalu drag & drop berkas <code class="bg-slate-900 text-purple-300 px-2 py-0.5 rounded">index.html</code> tadi.</p>
+                        <p>5. Klik **"Commit changes"**.</p>
+                    </div>
+                </div>
+
+                <!-- Step 3: Deploy on Vercel -->
+                <div class="space-y-2">
+                    <h4 class="text-sm font-bold text-cyan-400 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-cyan-500/20 flex items-center justify-center text-xs">3</span>
+                        Deploy Gratis ke Vercel
+                    </h4>
+                    <div class="text-xs text-slate-300 leading-relaxed pl-8 space-y-1.5">
+                        <p>1. Buka <a href="https://vercel.com" target="_blank" class="text-purple-400 underline">Vercel.com</a> dan login menggunakan akun GitHub kamu.</p>
+                        <p>2. Klik tombol **"Add New"** → **"Project"**.</p>
+                        <p>3. Pilih repository <code class="bg-slate-900 text-purple-300 px-2 py-0.5 rounded">animeku-web</code> yang telah dibuat lalu klik **Import**.</p>
+                        <p>4. Pada konfigurasi framework, biarkan default (Other / Static HTML).</p>
+                        <p>5. Klik **Deploy**. Dalam hitungan detik, website AnimeKu milikmu aktif dan siap diakses secara global melalui domain gratis dari Vercel!</p>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-800 text-center">
+                    <button onclick="closeGuideModal()" class="px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition">
+                        Paham, Tutup Panduan
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ANIME DATABASE */
+        const ANIME_DATABASE = [
+            {
+                id: 'solo-leveling',
+                title: 'Solo Leveling: Arise',
+                rating: 9.8,
+                status: 'Ongoing',
+                totalEpisodes: 12,
+                genres: ['Action', 'Fantasy', 'Adventure'],
+                banner: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=1200&auto=format&fit=crop',
+                poster: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=400&auto=format&fit=crop',
+                synopsis: 'Sung Jinwoo adalah Hunter terlemah E-Rank. Namun setelah terjebak di Double Dungeon, dia mendapatkan sistem misterius yang membuatnya mampu menaikkan level tanpa batas.',
+                episodes: Array.from({length: 12}, (_, i) => ({ ep: i + 1, title: `Episode ${i + 1}: Kebangkitan Bayangan` }))
+            },
+            {
+                id: 'jujutsu-kaisen',
+                title: 'Jujutsu Kaisen Season 2',
+                rating: 9.6,
+                status: 'Completed',
+                totalEpisodes: 23,
+                genres: ['Action', 'Supernatural', 'Fantasy'],
+                banner: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=1200&auto=format&fit=crop',
+                poster: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=400&auto=format&fit=crop',
+                synopsis: 'Arc Shibuya Incident mengubah segalanya. Yuji Itadori dan para penyihir Jujutsu bertarung sengit melawan kutukan tingkat tinggi demi menyelamatkan dunia.',
+                episodes: Array.from({length: 23}, (_, i) => ({ ep: i + 1, title: `Episode ${i + 1}: Insiden Shibuya` }))
+            },
+            {
+                id: 'demon-slayer',
+                title: 'Demon Slayer: Hashira Training',
+                rating: 9.5,
+                status: 'Ongoing',
+                totalEpisodes: 8,
+                genres: ['Action', 'Historical', 'Fantasy'],
+                banner: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1200&auto=format&fit=crop',
+                poster: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=400&auto=format&fit=crop',
+                synopsis: 'Tanjiro berlatih keras di bawah bimbingan para Hashira untuk bersiap menghadapi pertempuran akhir melawan Muzan Kibutsuji.',
+                episodes: Array.from({length: 8}, (_, i) => ({ ep: i + 1, title: `Episode ${i + 1}: Latihan Hashira` }))
+            },
+            {
+                id: 'one-piece',
+                title: 'One Piece: Egghead Arc',
+                rating: 9.7,
+                status: 'Ongoing',
+                totalEpisodes: 24,
+                genres: ['Action', 'Adventure', 'Sci-Fi'],
+                banner: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200&auto=format&fit=crop',
+                poster: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=400&auto=format&fit=crop',
+                synopsis: 'Kru Topi Jerami tiba di pulau masa depan Egghead dan bertemu dengan Dr. Vegapunk, membongkar rahasia Abad Kekosongan.',
+                episodes: Array.from({length: 24}, (_, i) => ({ ep: 1090 + i, title: `Episode ${1090 + i}: Rahasia Vegapunk` }))
+            },
+            {
+                id: 'frieren',
+                title: 'Frieren: Beyond Journey\'s End',
+                rating: 9.9,
+                status: 'Completed',
+                totalEpisodes: 28,
+                genres: ['Fantasy', 'Slice of Life', 'Adventure'],
+                banner: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1200&auto=format&fit=crop',
+                poster: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400&auto=format&fit=crop',
+                synopsis: 'Penyihir elf Frieren memahami arti kehidupan dan hubungan setelah rekan-rekan pahlawannya meninggal dunia.',
+                episodes: Array.from({length: 28}, (_, i) => ({ ep: i + 1, title: `Episode ${i + 1}: Perjalanan Baru` }))
+            },
+            {
+                id: 'mushoku-tensei',
+                title: 'Mushoku Tensei Season 2',
+                rating: 9.3,
+                status: 'Ongoing',
+                totalEpisodes: 24,
+                genres: ['Isekai', 'Fantasy', 'Romance'],
+                banner: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200&auto=format&fit=crop',
+                poster: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=400&auto=format&fit=crop',
+                synopsis: 'Rudeus Greyrat melanjutkan pencariannya di Akademi Sihir Ranoa sambil mencari petunjuk tentang keluarganya yang hilang.',
+                episodes: Array.from({length: 24}, (_, i) => ({ ep: i + 1, title: `Episode ${i + 1}: Akademi Sihir` }))
+            }
+        ];
+
+        /* APP STATE MANAGEMENT */
+        let currentTab = 'home';
+        let currentGenre = 'All';
+        let currentAnime = null;
+        let currentEpisodeIndex = 0;
+        let isPlaying = false;
+        let progressInterval = null;
+        let bookmarks = JSON.parse(localStorage.getItem('animeku_bookmarks') || '[]');
+
+        /* INITIALIZATION ON LOAD */
+        window.onload = function() {
+            renderHero();
+            renderAnimeGrid();
+        };
+
+        /* TAB SWITCHER */
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.nav-link').forEach(el => {
+                el.classList.remove('text-purple-400', 'bg-purple-500/10', 'border', 'border-purple-500/20');
+                el.classList.add('text-slate-400');
+            });
+            
+            const activeNav = document.getElementById(`nav-${tab}`);
+            if (activeNav) {
+                activeNav.classList.add('text-purple-400', 'bg-purple-500/10', 'border', 'border-purple-500/20');
+                activeNav.classList.remove('text-slate-400');
+            }
+
+            const sectionTitle = document.getElementById('sectionTitle');
+            if (tab === 'home') sectionTitle.innerText = 'Rekomendasi Terpopuler';
+            else if (tab === 'popular') sectionTitle.innerText = 'Anime Paling Populer';
+            else if (tab === 'ongoing') sectionTitle.innerText = 'Anime Sedang Tayang (Ongoing)';
+            else if (tab === 'bookmark') sectionTitle.innerText = 'Daftar Bookmark Saya';
+
+            renderAnimeGrid();
+        }
+
+        /* HERO RENDERING */
+        function renderHero() {
+            const featured = ANIME_DATABASE[0];
+            document.getElementById('heroContent').style.backgroundImage = `url('${featured.banner}')`;
+            document.getElementById('heroTitle').innerText = featured.title;
+            document.getElementById('heroDesc').innerText = featured.synopsis;
+            document.getElementById('heroRating').innerHTML = `<i class="fa-solid fa-star"></i> ${featured.rating}`;
+            
+            const genreContainer = document.getElementById('heroGenres');
+            genreContainer.innerHTML = featured.genres.map(g => 
+                `<span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-slate-900/80 text-cyan-400 border border-slate-700/80">${g}</span>`
+            ).join('');
+        }
+
+        /* ANIME CATALOG GRID */
+        function renderAnimeGrid() {
+            const grid = document.getElementById('animeGrid');
+            let filtered = ANIME_DATABASE;
+
+            if (currentTab === 'popular') {
+                filtered = [...ANIME_DATABASE].sort((a,b) => b.rating - a.rating);
+            } else if (currentTab === 'ongoing') {
+                filtered = ANIME_DATABASE.filter(a => a.status === 'Ongoing');
+            } else if (currentTab === 'bookmark') {
+                filtered = ANIME_DATABASE.filter(a => bookmarks.includes(a.id));
+            }
+
+            if (currentGenre !== 'All') {
+                filtered = filtered.filter(a => a.genres.includes(currentGenre));
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-16 text-center text-slate-500">
+                        <i class="fa-solid fa-folder-open text-4xl mb-3"></i>
+                        <p class="text-xs">Tidak ada anime yang ditemukan dalam kategori ini.</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(item => {
+                const isBookmarked = bookmarks.includes(item.id);
+                return `
+                    <div class="group relative bg-brand-card border border-brand-cardBorder rounded-2xl overflow-hidden shadow-lg hover:border-purple-500/50 transition duration-300 flex flex-col">
+                        <div class="relative aspect-[3/4] overflow-hidden cursor-pointer" onclick="openPlayer('${item.id}')">
+                            <img src="${item.poster}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+                            
+                            <span class="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold bg-purple-600 text-white shadow">
+                                ${item.status}
+                            </span>
+                            
+                            <button onclick="event.stopPropagation(); toggleBookmark('${item.id}')" class="absolute top-2 right-2 p-1.5 rounded-full bg-slate-950/70 text-slate-300 hover:text-purple-400 transition">
+                                <i class="${isBookmarked ? 'fa-solid text-purple-500' : 'fa-regular'} fa-bookmark text-xs"></i>
+                            </button>
+
+                            <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center text-xs">
+                                <span class="text-amber-400 font-bold flex items-center gap-1 text-[11px]"><i class="fa-solid fa-star text-[10px]"></i> ${item.rating}</span>
+                                <span class="text-slate-300 text-[10px] bg-slate-900/80 px-2 py-0.5 rounded border border-slate-800">${item.totalEpisodes} Ep</span>
+                            </div>
+                        </div>
+                        <div class="p-3 flex-1 flex flex-col justify-between">
+                            <h3 onclick="openPlayer('${item.id}')" class="font-bold text-xs text-slate-100 hover:text-purple-400 cursor-pointer line-clamp-1 transition">${item.title}</h3>
+                            <p class="text-[10px] text-slate-400 mt-1 line-clamp-1">${item.genres.join(', ')}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /* GENRE FILTER */
+        function filterByGenre(genre) {
+            currentGenre = genre;
+            document.querySelectorAll('.genre-btn').forEach(btn => {
+                if(btn.innerText === genre || (genre === 'All' && btn.innerText === 'Semua')) {
+                    btn.classList.add('bg-purple-600', 'text-white');
+                    btn.classList.remove('bg-slate-900', 'text-slate-300');
+                } else {
+                    btn.classList.remove('bg-purple-600', 'text-white');
+                    btn.classList.add('bg-slate-900', 'text-slate-300');
+                }
+            });
+            renderAnimeGrid();
+        }
+
+        /* BOOKMARK MANAGEMENT */
+        function toggleBookmark(animeId) {
+            if (bookmarks.includes(animeId)) {
+                bookmarks = bookmarks.filter(id => id !== animeId);
+            } else {
+                bookmarks.push(animeId);
+            }
+            localStorage.setItem('animeku_bookmarks', JSON.stringify(bookmarks));
+            renderAnimeGrid();
+            if (currentAnime && currentAnime.id === animeId) {
+                updateModalBookmarkBtn();
+            }
+        }
+
+        /* LIVE SEARCH */
+        function handleSearch(query) {
+            const dropdown = document.getElementById('searchDropdown');
+            if (!query.trim()) {
+                dropdown.classList.add('hidden');
+                return;
+            }
+
+            const results = ANIME_DATABASE.filter(a => 
+                a.title.toLowerCase().includes(query.toLowerCase()) || 
+                a.genres.some(g => g.toLowerCase().includes(query.toLowerCase()))
+            );
+
+            if (results.length === 0) {
+                dropdown.innerHTML = `<div class="p-3 text-xs text-slate-400 text-center">Anime tidak ditemukan</div>`;
+            } else {
+                dropdown.innerHTML = results.map(item => `
+                    <div onclick="openPlayer('${item.id}'); document.getElementById('searchDropdown').classList.add('hidden');" class="flex items-center gap-3 p-2.5 hover:bg-slate-800/80 cursor-pointer transition border-b border-slate-800/50 last:border-0">
+                        <img src="${item.poster}" class="w-8 h-10 object-cover rounded">
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-100">${item.title}</h4>
+                            <span class="text-[10px] text-purple-400">${item.genres.slice(0, 2).join(', ')}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            dropdown.classList.remove('hidden');
+        }
+
+        /* VIDEO PLAYER & DOWNLOAD MODAL SYSTEM */
+        function openPlayer(animeId) {
+            currentAnime = ANIME_DATABASE.find(a => a.id === animeId);
+            if (!currentAnime) return;
+
+            currentEpisodeIndex = 0;
+            isPlaying = false;
+
+            document.getElementById('modalAnimeTitle').innerText = currentAnime.title;
+            document.getElementById('modalRating').innerHTML = `<i class="fa-solid fa-star"></i> ${currentAnime.rating}`;
+            document.getElementById('modalStatus').innerText = currentAnime.status;
+            document.getElementById('modalTotalEps').innerText = `${currentAnime.totalEpisodes} Episode`;
+            document.getElementById('modalSynopsis').innerText = currentAnime.synopsis;
+            document.getElementById('playerThumbnail').src = currentAnime.banner;
+
+            updateEpisodeView();
+            renderEpisodeGrid();
+            updateModalBookmarkBtn();
+
+            document.getElementById('playerModal').classList.remove('hidden');
+        }
+
+        function closePlayer() {
+            document.getElementById('playerModal').classList.add('hidden');
+            isPlaying = false;
+            clearInterval(progressInterval);
+        }
+
+        function updateEpisodeView() {
+            const ep = currentAnime.episodes[currentEpisodeIndex];
+            document.getElementById('playerEpisodeTitle').innerText = `${currentAnime.title} - ${ep.title}`;
+            document.getElementById('downloadEpLabel').innerText = `${ep.title}`;
+            
+            const btn = document.getElementById('playPauseBtn');
+            btn.innerHTML = isPlaying ? `<i class="fa-solid fa-pause"></i>` : `<i class="fa-solid fa-play ml-1"></i>`;
+
+            if (isPlaying) {
+                startProgressSimulation();
+            } else {
+                clearInterval(progressInterval);
+            }
+        }
+
+        function togglePlayState() {
+            isPlaying = !isPlaying;
+            updateEpisodeView();
+        }
+
+        function startProgressSimulation() {
+            clearInterval(progressInterval);
+            let bar = document.getElementById('streamProgressBar');
+            let width = 0;
+            progressInterval = setInterval(() => {
+                if (width >= 100) {
+                    width = 0;
+                } else {
+                    width += 1;
+                }
+                bar.style.width = width + '%';
+            }, 300);
+        }
+
+        function changeEpisode(delta) {
+            const newIndex = currentEpisodeIndex + delta;
+            if (newIndex >= 0 && newIndex < currentAnime.episodes.length) {
+                currentEpisodeIndex = newIndex;
+                updateEpisodeView();
+                renderEpisodeGrid();
+            }
+        }
+
+        function selectEpisode(index) {
+            currentEpisodeIndex = index;
+            isPlaying = true;
+            updateEpisodeView();
+            renderEpisodeGrid();
+        }
+
+        function renderEpisodeGrid() {
+            const container = document.getElementById('episodeGrid');
+            document.getElementById('episodeCountBadge').innerText = `Total ${currentAnime.episodes.length} Ep`;
+
+            container.innerHTML = currentAnime.episodes.map((ep, idx) => {
+                const isActive = idx === currentEpisodeIndex;
+                return `
+                    <button onclick="selectEpisode(${idx})" class="py-2 px-1 rounded-xl text-xs font-bold transition border ${
+                        isActive 
+                        ? 'bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-600/30' 
+                        : 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800'
+                    }">
+                        Ep ${ep.ep}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function updateModalBookmarkBtn() {
+            const isBookmarked = bookmarks.includes(currentAnime.id);
+            const btn = document.getElementById('modalBookmarkBtn');
+            btn.innerHTML = `<i class="${isBookmarked ? 'fa-solid text-purple-500' : 'fa-regular'} fa-bookmark"></i> ${isBookmarked ? 'Tersimpan' : 'Bookmark'}`;
+        }
+
+        function toggleCurrentBookmark() {
+            if (currentAnime) {
+                toggleBookmark(currentAnime.id);
+            }
+        }
+
+        function switchServer(serverName) {
+            document.getElementById('playerStatusBadge').innerHTML = `<i class="fa-solid fa-circle text-[8px] text-emerald-400 mr-1.5 animate-pulse"></i> Active • ${serverName}`;
+        }
+
+        /* TRIGGER DIRECT DOWNLOAD SIMULATION */
+        function triggerDownload(resolution, server) {
+            const ep = currentAnime.episodes[currentEpisodeIndex];
+            const fileName = `${currentAnime.title.replace(/[^a-zA-Z0-9]/g, '_')}_Ep_${ep.ep}_${resolution}.mp4`;
+            
+            // Generate dummy download file blob
+            const content = `AnimeKu Download Manifest\nTitle: ${currentAnime.title}\nEpisode: ${ep.ep}\nResolution: ${resolution}\nServer Mirror: ${server}\nTimestamp: ${new Date().toISOString()}`;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            alert(`Memulai unduhan berkas ${resolution} melalui mirror ${server}...\nNama berkas: ${fileName}`);
+        }
+
+        /* GUIDE MODAL CONTROL */
+        function openGuideModal() {
+            document.getElementById('guideModal').classList.remove('hidden');
+        }
+
+        function closeGuideModal() {
+            document.getElementById('guideModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
